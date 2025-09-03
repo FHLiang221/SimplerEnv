@@ -1,0 +1,52 @@
+{
+  "dataset_name": "google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes",
+  "environment_name": "google_robot_pick_object",
+  "num_successful_episodes": 20,
+  "num_saved_failures": 1,
+  "num_discarded_failures": 2,
+  "total_saved_episodes": 21,
+  "total_attempted_episodes": 23,
+  "attempted_episodes": 23,
+  "success_rate": 0.8695652173913043,
+  "failure_save_rate": 0.3333333333333333,
+  "unique_instructions": [
+    "pick pepsi can",
+    "pick sponge",
+    "pick blue plastic bottle",
+    "pick coke can",
+    "pick fanta can",
+    "pick apple",
+    "pick green cube",
+    "pick redbull can",
+    "pick carrot",
+    "pick sprite can"
+  ],
+  "instruction_diversity": 10,
+  "success_episode_files": [
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000001.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000002.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000004.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000005.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000006.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000007.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000009.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000010.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000011.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000012.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000013.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000014.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000015.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000016.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000017.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000018.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000019.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000021.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000022.npz",
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/successes/success_episode_000023.npz"
+  ],
+  "failure_episode_files": [
+    "collected_data/google_robot_pick_object_20trajs_switch_2025-09-03_10-33-23_all_episodes/failures/failure_episode_000003.npz"
+  ],
+  "timestamp": "2025-09-03_10-33-23",
+  "collection_mode": "all_episodes_adaptive_instructions"
+}

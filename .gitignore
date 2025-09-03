@@ -26,4 +26,18 @@ dist/
 # VSCode editor settings
 .vscode
 
+# Videos and evaluation results
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+
 imgui.ini

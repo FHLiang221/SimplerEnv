@@ -1,0 +1,31 @@
+{
+  "dataset_name": "google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes",
+  "environment_name": "google_robot_pick_coke_can",
+  "num_successful_episodes": 10,
+  "num_saved_failures": 0,
+  "num_discarded_failures": 1,
+  "total_saved_episodes": 10,
+  "total_attempted_episodes": 11,
+  "attempted_episodes": 11,
+  "success_rate": 0.9090909090909091,
+  "failure_save_rate": 0.0,
+  "unique_instructions": [
+    "pick coke can"
+  ],
+  "instruction_diversity": 1,
+  "success_episode_files": [
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000001.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000002.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000004.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000005.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000006.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000007.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000008.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000009.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000010.npz",
+    "collected_data/google_robot_pick_coke_can_10trajs_switch_2025-09-03_10-31-22_all_episodes/successes/success_episode_000011.npz"
+  ],
+  "failure_episode_files": [],
+  "timestamp": "2025-09-03_10-31-22",
+  "collection_mode": "all_episodes_adaptive_instructions"
+}

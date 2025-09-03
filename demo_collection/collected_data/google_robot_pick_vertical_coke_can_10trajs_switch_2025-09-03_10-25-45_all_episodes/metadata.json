@@ -1,0 +1,33 @@
+{
+  "dataset_name": "google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes",
+  "environment_name": "google_robot_pick_vertical_coke_can",
+  "num_successful_episodes": 10,
+  "num_saved_failures": 1,
+  "num_discarded_failures": 4,
+  "total_saved_episodes": 11,
+  "total_attempted_episodes": 15,
+  "attempted_episodes": 15,
+  "success_rate": 0.6666666666666666,
+  "failure_save_rate": 0.2,
+  "unique_instructions": [
+    "pick coke can"
+  ],
+  "instruction_diversity": 1,
+  "success_episode_files": [
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000002.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000004.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000005.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000006.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000007.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000008.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000012.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000013.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000014.npz",
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/successes/success_episode_000015.npz"
+  ],
+  "failure_episode_files": [
+    "collected_data/google_robot_pick_vertical_coke_can_10trajs_switch_2025-09-03_10-25-45_all_episodes/failures/failure_episode_000011.npz"
+  ],
+  "timestamp": "2025-09-03_10-25-45",
+  "collection_mode": "all_episodes_adaptive_instructions"
+}
