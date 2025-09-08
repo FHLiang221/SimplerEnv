@@ -1,0 +1,49 @@
+{
+  "dataset_name": "google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes",
+  "environment_name": "google_robot_open_bottom_drawer",
+  "num_successful_episodes": 20,
+  "num_saved_failures": 7,
+  "num_discarded_failures": 28,
+  "total_saved_episodes": 27,
+  "total_attempted_episodes": 55,
+  "attempted_episodes": 55,
+  "success_rate": 0.36363636363636365,
+  "failure_save_rate": 0.2,
+  "unique_instructions": [
+    "open bottom drawer"
+  ],
+  "instruction_diversity": 1,
+  "success_episode_files": [
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000002.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000005.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000006.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000008.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000015.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000018.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000019.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000027.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000028.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000029.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000030.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000031.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000034.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000036.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000044.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000046.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000048.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000052.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000054.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/successes/success_episode_000055.npz"
+  ],
+  "failure_episode_files": [
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/failures/failure_episode_000013.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/failures/failure_episode_000017.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/failures/failure_episode_000021.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/failures/failure_episode_000022.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/failures/failure_episode_000042.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/failures/failure_episode_000047.npz",
+    "collected_data/google_robot_open_bottom_drawer_20trajs_switch_2025-09-04_13-23-42_all_episodes/failures/failure_episode_000050.npz"
+  ],
+  "timestamp": "2025-09-04_13-23-42",
+  "collection_mode": "all_episodes_adaptive_instructions"
+}

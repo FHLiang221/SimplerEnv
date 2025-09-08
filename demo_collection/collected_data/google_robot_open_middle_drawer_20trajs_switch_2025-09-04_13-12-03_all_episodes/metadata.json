@@ -1,0 +1,45 @@
+{
+  "dataset_name": "google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes",
+  "environment_name": "google_robot_open_middle_drawer",
+  "num_successful_episodes": 20,
+  "num_saved_failures": 3,
+  "num_discarded_failures": 8,
+  "total_saved_episodes": 23,
+  "total_attempted_episodes": 31,
+  "attempted_episodes": 31,
+  "success_rate": 0.6451612903225806,
+  "failure_save_rate": 0.2727272727272727,
+  "unique_instructions": [
+    "open middle drawer"
+  ],
+  "instruction_diversity": 1,
+  "success_episode_files": [
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000002.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000003.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000004.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000005.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000006.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000012.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000013.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000014.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000015.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000017.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000018.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000019.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000022.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000024.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000025.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000026.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000027.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000028.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000029.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/successes/success_episode_000031.npz"
+  ],
+  "failure_episode_files": [
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/failures/failure_episode_000016.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/failures/failure_episode_000021.npz",
+    "collected_data/google_robot_open_middle_drawer_20trajs_switch_2025-09-04_13-12-03_all_episodes/failures/failure_episode_000030.npz"
+  ],
+  "timestamp": "2025-09-04_13-12-03",
+  "collection_mode": "all_episodes_adaptive_instructions"
+}

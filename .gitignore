@@ -41,3 +41,9 @@ dist/
 *.tiff
 
 imgui.ini
+
+# Zip files
+*.zip
+
+# collected data
+/collected_data/

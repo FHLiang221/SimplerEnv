@@ -1,0 +1,47 @@
+{
+  "dataset_name": "google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes",
+  "environment_name": "google_robot_open_top_drawer",
+  "num_successful_episodes": 20,
+  "num_saved_failures": 5,
+  "num_discarded_failures": 17,
+  "total_saved_episodes": 25,
+  "total_attempted_episodes": 42,
+  "attempted_episodes": 42,
+  "success_rate": 0.47619047619047616,
+  "failure_save_rate": 0.22727272727272727,
+  "unique_instructions": [
+    "open top drawer"
+  ],
+  "instruction_diversity": 1,
+  "success_episode_files": [
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000001.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000003.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000007.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000017.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000019.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000021.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000022.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000023.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000025.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000027.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000028.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000029.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000030.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000032.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000033.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000034.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000036.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000040.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000041.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/successes/success_episode_000042.npz"
+  ],
+  "failure_episode_files": [
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/failures/failure_episode_000015.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/failures/failure_episode_000016.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/failures/failure_episode_000020.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/failures/failure_episode_000024.npz",
+    "collected_data/google_robot_open_top_drawer_20trajs_switch_2025-09-04_13-00-10_all_episodes/failures/failure_episode_000035.npz"
+  ],
+  "timestamp": "2025-09-04_13-00-10",
+  "collection_mode": "all_episodes_adaptive_instructions"
+}
