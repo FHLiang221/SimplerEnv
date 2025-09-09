@@ -47,3 +47,5 @@ imgui.ini
 
 # collected data
 /collected_data/
+/demo_collection/collected_data/
+/demo_collection/jaco_data/

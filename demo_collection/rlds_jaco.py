@@ -16,6 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 import fire
+import cv2
 import simpler_env
 from simpler_env.utils.env.observation_utils import (
     get_image_from_maniskill2_obs_dict,
@@ -155,7 +156,7 @@ def get_jaco_proprioception(env, obs) -> np.ndarray:
     return np.concatenate([eef_pose_vec, [gripper_state]], axis=0).astype(np.float32)
 
 # ── Episode Data Collection and Storage ─────────────────────────────────
-def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: int):
+def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: int, base_dir=None):
     """Collect a single episode and return the raw data with success status."""
     
     obs, info = env.reset()
@@ -179,9 +180,34 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
     step_count = 0
     
     while True:
-        # Show RGB observation
+        # Show RGB observation using the same approach as rlds.py
         img = Image.fromarray(get_image_from_maniskill2_obs_dict(env, obs))
         resized = np.array(img.resize((224, 224), Image.BILINEAR))
+        
+        # Save frames as PNG images with timestamps (every 5 steps for more samples)
+        if step_count > 0 and step_count % 5 == 0 and base_dir is not None:
+            # Create episode-specific directory structure
+            episode_frames_dir = base_dir / "captured_frames" / f"episode_{episode_id:03d}"
+            render_frames_dir = episode_frames_dir / "original_view"
+            training_frames_dir = episode_frames_dir / "training_observation"
+            
+            # Create directories
+            render_frames_dir.mkdir(parents=True, exist_ok=True)
+            training_frames_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Get current timestamp
+            timestamp = datetime.now().strftime('%H-%M-%S-%f')[:-3]  # milliseconds precision
+            
+            # Save original frame (what you see during demo)
+            render_frame_path = render_frames_dir / f"step{step_count:03d}_{timestamp}.png"
+            cv2.imwrite(str(render_frame_path), cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR))
+            
+            # Save training observation frame (224x224 - what gets saved for VLA training)
+            training_frame_path = training_frames_dir / f"step{step_count:03d}_{timestamp}.png"
+            cv2.imwrite(str(training_frame_path), cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
+            
+            print(f"📸 Episode {episode_id} frames saved at step {step_count}: {timestamp}")
+        
         plt.imshow(img)
         plt.axis("off")
         plt.draw()
@@ -315,11 +341,14 @@ def collect_trajectory(env_name: str, num_trajs: int):
     
     plt.figure()
     
+    # Ensure base directory exists
+    base_dir.mkdir(parents=True, exist_ok=True)
+    
     # Create environment with Jaco robot configuration - use gymnasium directly
     # Map common task names to ManiSkill2 environment IDs and their parameters
     env_mapping = {
-        "google_robot_pick_coke_can": ("GraspSingleOpenedCokeCanInScene-v0", {}),
-        "google_robot_pick_horizontal_coke_can": ("GraspSingleOpenedCokeCanInScene-v0", {"lr_switch": True}),
+        "google_robot_pick_coke_can": ("GraspSingleCokeCanInScene-v0", {}),
+        "google_robot_pick_horizontal_coke_can": ("GraspSingleCokeCanInScene-v0", {"lr_switch": True}),
         "google_robot_pick_vertical_coke_can": ("GraspSingleOpenedCokeCanInScene-v0", {"laid_vertically": True}),
         "google_robot_pick_standing_coke_can": ("GraspSingleOpenedCokeCanInScene-v0", {"upright": True}),
         "google_robot_pick_object": ("GraspSingleRandomObjectInScene-v0", {}),
@@ -356,6 +385,14 @@ def collect_trajectory(env_name: str, num_trajs: int):
     import mani_skill2_real2sim.envs  # Register the environments
     
     # Combine task-specific parameters with Jaco robot configuration
+    from mani_skill2_real2sim.utils.sapien_utils import look_at
+    
+    # Set up the same camera positioning as manual control script
+    pose = look_at([1.0, 1.0, 2.5], [0.0, 0.0, 0.7])
+    camera_cfgs = {
+        "base_camera": dict(p=pose.p, q=pose.q, width=128, height=128, fov=np.deg2rad(69.4))
+    }
+    
     env_kwargs = {
         "obs_mode": "rgbd",
         "control_mode": "arm_pd_ee_target_delta_pose_gripper_pd_joint_pos",
@@ -363,11 +400,12 @@ def collect_trajectory(env_name: str, num_trajs: int):
         "sim_freq": 501,
         "control_freq": 3,
         "scene_name": "google_pick_coke_can_1_v4",
+        "camera_cfgs": camera_cfgs,
         **task_params  # Add task-specific parameters (lr_switch, upright, etc.)
     }
     
     env = gym.make(maniskill_env_id, **env_kwargs)
-
+    
     print(f"Collecting Jaco arm trajectories in {env_name}")
     print(f"Saving to: {base_dir}")
     print("💾 ALL EPISODES MODE: Both successes and failures will be saved")
@@ -375,6 +413,7 @@ def collect_trajectory(env_name: str, num_trajs: int):
     print(f"  Failures → {failure_dir}")
     print(f"🤖 JACO ARM MODE: Action dim={JACO_ACTION_DIM}, Proprio dim={JACO_PROPRIO_DIM}")
     print("📝 ADAPTIVE MODE: Instructions captured per episode for randomized tasks")
+    print("📸 FRAME CAPTURE MODE: PNG images saved every 5 steps with timestamps")
     print(
         "Controls: Left hand (L-stick, L/ZL) = translation, "
         "Right hand (R-stick, R/ZR) = rotation, A/B = gripper"
@@ -399,15 +438,18 @@ def collect_trajectory(env_name: str, num_trajs: int):
             get_switch_action()
         
         # Now wait for + button press to start episode
+        # Record video even while waiting
         while not wants_start():
             time.sleep(0.1)
             get_switch_action()
+            
+            # Just wait, no need to record frames during waiting
         
         print("Jaco episode starting...")
         clear_start_flag()
         
         ignore_quit_for = 10                # ≈ 10 * 0.03 s  ➜  0.3 s debounce
-        episode_data = collect_episode_data(env, env_name, ep_i, ignore_quit_for)
+        episode_data = collect_episode_data(env, env_name, ep_i, ignore_quit_for, base_dir)
         
         if episode_data:
             unique_instructions.add(episode_data['language_instruction'])
@@ -440,6 +482,22 @@ def collect_trajectory(env_name: str, num_trajs: int):
             ep_i += 1
         else:
             print("⚠️  Unexpected error with Jaco - trying again")
+
+    # Show frame capture summary
+    frames_dir = base_dir / "captured_frames"
+    if frames_dir.exists():
+        # Count frames across all episodes
+        render_files = list(frames_dir.glob("*/original_view/*.png"))
+        training_files = list(frames_dir.glob("*/training_observation/*.png"))
+        episode_dirs = list(frames_dir.glob("episode_*"))
+        
+        print(f"📸 Frame capture summary:")
+        print(f"   Episodes captured: {len(episode_dirs)}")
+        print(f"   Original view frames: {len(render_files)}")
+        print(f"   Training observation frames: {len(training_files)}")
+        print(f"   Location: {frames_dir}")
+    else:
+        print("📸 No frames were captured during this session")
 
     # Save metadata with instruction diversity info
     metadata = {
