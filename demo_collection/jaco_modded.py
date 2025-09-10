@@ -110,18 +110,18 @@ def get_action():
     elif js.get_axis(AXIS_ZL) > 0.1:                    # ZL trigger (analog) → back
         dx = -VEL_TRANSLATE * speed_mult
     
-    dy = VEL_TRANSLATE * (axis(AX_LX)) * speed_mult      # Left stick left/right → left/right
+    dy = VEL_TRANSLATE * (-axis(AX_LX)) * speed_mult     # Left stick left/right → Y right/left (inverted)
     
     # Z movement on left stick up/down
-    dz = VEL_TRANSLATE * (-axis(AX_LY)) * speed_mult    # Left stick up/down → Z up/down
+    dz = VEL_TRANSLATE * (axis(AX_LY)) * speed_mult      # Left stick up/down → Z down/up (inverted)
     
     # ── RIGHT HAND: ROTATION ────────────────────────────────────────────
     # Yaw on right shoulder buttons
     dyaw = 0.0
-    if js.get_button(BTN_R):                            # R button → yaw left
-        dyaw = -VEL_ROTATE * speed_mult
-    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger (analog) → yaw right
+    if js.get_button(BTN_R):                            # R button → yaw right (inverted)
         dyaw = VEL_ROTATE * speed_mult
+    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger (analog) → yaw left (inverted)
+        dyaw = -VEL_ROTATE * speed_mult
     
     dpitch = VEL_ROTATE * (axis(AX_RY)) * speed_mult    # Right stick up/down → pitch (inverted)
     droll = VEL_ROTATE * axis(AX_RX) * speed_mult       # Right stick left/right → roll
