@@ -72,9 +72,9 @@ AXIS_ZL = 4        # Z down (Left Trigger)
 AXIS_ZR = 5        # Roll right (Right Trigger)
 
 # ── Control parameters ─────────────────────────────────────────────────
-VEL_TRANSLATE = 0.03    # Base translation speed
-VEL_ROTATE = 0.3       # Base rotation speed  
-VEL_GRIPPER = 0.1     # Gripper sensitivity
+VEL_TRANSLATE = 0.015   # Base translation speed (reduced from 0.03)
+VEL_ROTATE = 0.08      # Base rotation speed (further reduced from 0.15)
+VEL_GRIPPER = 0.05    # Gripper sensitivity (reduced from 0.1)
 DEADZONE = 0.05        # Stick deadzone
 
 # Speed modifiers
