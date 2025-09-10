@@ -179,7 +179,7 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
     )
     
     env_reset_options = {
-        "obj_init_options": {"init_xy": [-0.12, 0.2]},
+        #"obj_init_options": {"init_xy": [-0.12, 0.2]},
         "robot_init_options": {
             "init_xy": [-0.45, 0.6],
             "init_rot_quat": Pose(q=[1, 0, 0, 0]).q,
