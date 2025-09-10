@@ -22,6 +22,7 @@ from simpler_env.utils.env.observation_utils import (
     get_image_from_maniskill2_obs_dict,
 )
 from mani_skill2_real2sim.utils.sapien_utils import vectorize_pose
+from sapien.core import Pose
 
 # ── Jaco Arm Constants ──────────────────────────────────────────────────────
 # Kinova Jaco arm - using 8D proprioception for OpenVLA-OFT compatibility
@@ -69,7 +70,21 @@ def get_switch_action() -> np.ndarray:
             _last = np.frombuffer(data, dtype=np.float32).copy()  # Make writable copy
     except BlockingIOError:
         pass                              # nothing arrived this frame
-    return _last[:JACO_ACTION_DIM]        # first 7 floats = action for Jaco
+    
+    action = _last[:JACO_ACTION_DIM].copy()  # first 7 floats = action for Jaco
+    
+    # Apply discrete gripper control like demo_manual_control_custom_envs.py
+    # Map continuous gripper input to discrete -1/+1 values for better control
+    gripper_input = action[6]  # gripper is the 7th element (index 6)
+    if abs(gripper_input) > 0.01:  # threshold to detect button press (controller sends ±0.05)
+        if gripper_input > 0:
+            action[6] = 1.0   # fully open gripper (B button sends +0.05)
+        else:
+            action[6] = -1.0  # fully close gripper (A button sends -0.05)
+    else:
+        action[6] = 0.0       # no gripper action
+    
+    return action
 
 def wants_quit() -> bool:
     """PLUS button flag sent as the 8th float."""
@@ -159,7 +174,20 @@ def get_jaco_proprioception(env, obs) -> np.ndarray:
 def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: int, base_dir=None):
     """Collect a single episode and return the raw data with success status."""
     
-    obs, info = env.reset()
+    names_in_env_id_fxn = lambda name_list: any(
+        name in env_name for name in name_list
+    )
+    
+    env_reset_options = {
+        "obj_init_options": {"init_xy": [-0.12, 0.2]},
+        "robot_init_options": {
+            "init_xy": [-0.45, 0.6],
+            "init_rot_quat": Pose(q=[1, 0, 0, 0]).q,
+        },
+    }
+    if names_in_env_id_fxn(["MoveNear"]):
+        env_reset_options["obj_init_options"]["episode_id"] = 0
+    obs, info = env.reset(options=env_reset_options)
     instruction = episode_instruction(env, info, env_name)   # ← pass env_name
 
     
@@ -242,6 +270,12 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
             obs, reward, success, truncated, _ = env.step(action)
             done = success or truncated
             step_count += 1
+
+            # Reset gripper action for delta target control mode (like demo_manual_control_custom_envs.py)
+            # This ensures gripper doesn't continue moving after one command
+            if "target_delta" in env.control_mode and "gripper" in env.control_mode:
+                # Reset the gripper component of the global _last array to prevent continuous movement
+                _last[6] = 0.0
 
             # --- Build Jaco-specific proprioceptive state ---
             jaco_proprio = get_jaco_proprioception(env, obs)  # 8D: EEF pose + gripper
@@ -349,8 +383,8 @@ def collect_trajectory(env_name: str, num_trajs: int):
     env_mapping = {
         "google_robot_pick_coke_can": ("GraspSingleCokeCanInScene-v0", {}),
         "google_robot_pick_horizontal_coke_can": ("GraspSingleCokeCanInScene-v0", {"lr_switch": True}),
-        "google_robot_pick_vertical_coke_can": ("GraspSingleOpenedCokeCanInScene-v0", {"laid_vertically": True}),
-        "google_robot_pick_standing_coke_can": ("GraspSingleOpenedCokeCanInScene-v0", {"upright": True}),
+        "google_robot_pick_vertical_coke_can": ("GraspSingleCokeCanInScene-v0", {"laid_vertically": True}),
+        "google_robot_pick_standing_coke_can": ("GraspSingleCokeCanInScene-v0", {"upright": True}),
         "google_robot_pick_object": ("GraspSingleRandomObjectInScene-v0", {}),
         "google_robot_move_near": ("MoveNearGoogleBakedTexInScene-v1", {}),
         "google_robot_move_near_v0": ("MoveNearGoogleBakedTexInScene-v0", {}),
@@ -393,13 +427,48 @@ def collect_trajectory(env_name: str, num_trajs: int):
         "base_camera": dict(p=pose.p, q=pose.q, width=128, height=128, fov=np.deg2rad(69.4))
     }
     
+    # Determine appropriate scene based on task type
+    scene_mapping = {
+        # Google Robot tasks use google scene
+        "google_robot_pick_coke_can": "google_pick_coke_can_1_v4",
+        "google_robot_pick_horizontal_coke_can": "google_pick_coke_can_1_v4",
+        "google_robot_pick_vertical_coke_can": "google_pick_coke_can_1_v4",
+        "google_robot_pick_standing_coke_can": "google_pick_coke_can_1_v4",
+        "google_robot_pick_object": "google_pick_coke_can_1_v4",
+        "google_robot_move_near": "google_pick_coke_can_1_v4",
+        "google_robot_move_near_v0": "google_pick_coke_can_1_v4",
+        "google_robot_move_near_v1": "google_pick_coke_can_1_v4",
+        # Drawer tasks use apartment scene
+        "google_robot_open_drawer": "frl_apartment_stage_simple",
+        "google_robot_open_top_drawer": "frl_apartment_stage_simple",
+        "google_robot_open_middle_drawer": "frl_apartment_stage_simple",
+        "google_robot_open_bottom_drawer": "frl_apartment_stage_simple",
+        "google_robot_close_drawer": "frl_apartment_stage_simple",
+        "google_robot_close_top_drawer": "frl_apartment_stage_simple",
+        "google_robot_close_middle_drawer": "frl_apartment_stage_simple",
+        "google_robot_close_bottom_drawer": "frl_apartment_stage_simple",
+        "google_robot_place_in_closed_drawer": "frl_apartment_stage_simple",
+        "google_robot_place_in_closed_top_drawer": "frl_apartment_stage_simple",
+        "google_robot_place_in_closed_middle_drawer": "frl_apartment_stage_simple",
+        "google_robot_place_in_closed_bottom_drawer": "frl_apartment_stage_simple",
+        "google_robot_place_apple_in_closed_top_drawer": "frl_apartment_stage_simple",
+        # Bridge tasks use bridge scene
+        "widowx_spoon_on_towel": "bridge_table_1_v1",
+        "widowx_carrot_on_plate": "bridge_table_1_v1",
+        "widowx_stack_cube": "bridge_table_1_v1",
+        "widowx_put_eggplant_in_basket": "bridge_table_1_v2",
+    }
+    
+    # Use appropriate scene for the task, fallback to google scene if not mapped
+    scene_name = scene_mapping.get(env_name, "google_pick_coke_can_1_v4")
+    
     env_kwargs = {
         "obs_mode": "rgbd",
         "control_mode": "arm_pd_ee_target_delta_pose_gripper_pd_joint_pos",
         "robot": "jaco",
         "sim_freq": 501,
         "control_freq": 3,
-        "scene_name": "google_pick_coke_can_1_v4",
+        "scene_name": scene_name,
         "camera_cfgs": camera_cfgs,
         **task_params  # Add task-specific parameters (lr_switch, upright, etc.)
     }
