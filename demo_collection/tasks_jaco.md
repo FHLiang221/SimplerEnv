@@ -1,24 +1,6 @@
 # Jaco Arm Data Collection Commands
 
-## **Prerequisites**
-
-### 1. Hardware Setup
-```bash
-# Ensure Nintendo Switch controller is paired and connected
-# Controller should be running the TCP bridge on port 5555
-# Verify connection: controller should send action data to 0.0.0.0:5555
-```
-
-### 2. Environment Setup
-```bash
-cd /project/fhliang/projects/SimplerEnv/demo_collection
-# Ensure simpler_env is installed and working
-python -c "import simpler_env; print('SimplerEnv ready')"
-```
-
----
-
-## **Picking Tasks** (50 episodes total)
+## **Picking Tasks** (70 episodes total)
 
 ```bash
 # Horizontal coke can pickup (good for grasp diversity)
@@ -35,6 +17,12 @@ python rlds_jaco.py google_robot_pick_coke_can 10
 
 # Generic object pickup (diverse objects)
 python rlds_jaco.py google_robot_pick_object 20
+
+# Pick apple (specific object)
+python rlds_jaco.py google_robot_pick_apple 10
+
+# Pick sponge (specific object)
+python rlds_jaco.py google_robot_pick_sponge 10
 ```
 
 ## **Drawer Tasks**
@@ -159,8 +147,8 @@ python vla-scripts/finetune.py \
 
 ## **Collection Strategy Recommendations**
 
-### **Balanced Dataset (230 total episodes)**
-1. **Picking**: 50 episodes (diverse grasping patterns)
+### **Balanced Dataset (250 total episodes)**
+1. **Picking**: 70 episodes (diverse grasping patterns)
 2. **Drawer Opening**: 60 episodes (spatial reasoning)
 3. **Drawer Closing**: 60 episodes (precision movements)
 4. **Placement**: 40 episodes (complex sequences)
