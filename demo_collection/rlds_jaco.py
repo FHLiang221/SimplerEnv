@@ -330,11 +330,11 @@ def collect_trajectory(env_name: str, num_trajs: int):
     ONLY SAVES SUCCESSFUL EPISODES.
     """
     
-    # Create output directories with timestamp - save to SimplerEnv/demo_collection/jaco_data
+    # Create output directories with timestamp - save to demo_collection/jaco_data
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     dataset_name = f"jaco_{env_name}_{num_trajs}trajs_switch_{timestamp}_all_episodes"
-    jaco_data_dir = Path("/project/fhliang/projects/SimplerEnv/demo_collection/jaco_data")
-    jaco_data_dir.mkdir(exist_ok=True)  # Create jaco_data dir if it doesn't exist
+    jaco_data_dir = Path("jaco_data")  # Relative to current directory
+    jaco_data_dir.mkdir(parents=True, exist_ok=True)  # Create jaco_data dir if it doesn't exist
     base_dir = jaco_data_dir / dataset_name
     success_dir = base_dir / "successes"
     failure_dir = base_dir / "failures"

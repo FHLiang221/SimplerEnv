@@ -8,15 +8,16 @@ ssh -N -L 60000:localhost:5555 -o Compression=no -o TCPKeepAlive=yes -o ServerAl
 Controls (Intuitive Left/Right Hand Separation)
 ────────────────────────────────────────────────────────────
 LEFT HAND - TRANSLATION:
-  Left Stick X/Y        : X/Y translate (forward/back, left/right)
-  L Button              : Z translate UP
-  ZL Trigger            : Z translate DOWN
+  Left Stick X          : Left/Right translate
+  Left Stick Y          : Z translate (up/down)
+  L Button              : Forward
+  ZL Trigger            : Backward
 
 RIGHT HAND - ROTATION:
-  Right Stick X         : Yaw rotate (turn left/right)
-  Right Stick Y         : Pitch rotate (nose up/down)
-  R Button              : Roll rotate LEFT
-  ZR Trigger            : Roll rotate RIGHT
+  Right Stick X         : Roll rotate (left/right)
+  Right Stick Y         : Pitch rotate (up/down) - inverted
+  R Button              : Yaw rotate LEFT
+  ZR Trigger            : Yaw rotate RIGHT
 
 GRIPPER & CONTROL:
   A Button              : Close gripper
@@ -102,26 +103,28 @@ def get_action():
     speed_mult = get_speed_multiplier()
     
     # ── LEFT HAND: TRANSLATION ─────────────────────────────────────────
-    dx = VEL_TRANSLATE * (-axis(AX_LY)) * speed_mult    # Left stick up/down → forward/back
-    dy = VEL_TRANSLATE * (-axis(AX_LX)) * speed_mult     # Left stick left/right → left/right
+    # Forward/back movement on left shoulder buttons
+    dx = 0.0
+    if js.get_button(BTN_L):                            # L button → forward
+        dx = VEL_TRANSLATE * speed_mult
+    elif js.get_axis(AXIS_ZL) > 0.1:                    # ZL trigger (analog) → back
+        dx = -VEL_TRANSLATE * speed_mult
     
-    # Z movement on left shoulder buttons
-    dz = 0.0
-    if js.get_button(BTN_L):                            # L button → up
-        dz = VEL_TRANSLATE * speed_mult
-    elif js.get_axis(AXIS_ZL) > 0.1:                    # ZL trigger (analog) → down
-        dz = -VEL_TRANSLATE * speed_mult
+    dy = VEL_TRANSLATE * (axis(AX_LX)) * speed_mult      # Left stick left/right → left/right
+    
+    # Z movement on left stick up/down
+    dz = VEL_TRANSLATE * (-axis(AX_LY)) * speed_mult    # Left stick up/down → Z up/down
     
     # ── RIGHT HAND: ROTATION ────────────────────────────────────────────
-    dyaw = VEL_ROTATE * axis(AX_RX) * speed_mult        # Right stick left/right → yaw
-    dpitch = VEL_ROTATE * (-axis(AX_RY)) * speed_mult   # Right stick up/down → pitch
+    # Yaw on right shoulder buttons
+    dyaw = 0.0
+    if js.get_button(BTN_R):                            # R button → yaw left
+        dyaw = -VEL_ROTATE * speed_mult
+    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger (analog) → yaw right
+        dyaw = VEL_ROTATE * speed_mult
     
-    # Roll on right shoulder buttons
-    droll = 0.0
-    if js.get_button(BTN_R):                            # R button → roll left
-        droll = -VEL_ROTATE * speed_mult
-    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger (analog) → roll right
-        droll = VEL_ROTATE * speed_mult
+    dpitch = VEL_ROTATE * (axis(AX_RY)) * speed_mult    # Right stick up/down → pitch (inverted)
+    droll = VEL_ROTATE * axis(AX_RX) * speed_mult       # Right stick left/right → roll
     
     # ── GRIPPER & CONTROL ───────────────────────────────────────────────
     grip = 0.0
@@ -160,16 +163,16 @@ def print_controls():
     print("NINTENDO SWITCH PRO CONTROLLER - ROBOT TELEOPERATION")
     print("="*60)
     print("LEFT HAND (Translation):")
-    print("  Left Stick ↑↓  → Forward/Backward")
-    print("  Left Stick ←→  → Left/Right") 
-    print("  L Button       → Move UP")
-    print("  ZL Trigger     → Move DOWN")
+    print("  Left Stick ←→  → Left/Right")
+    print("  Left Stick ↑↓  → Move UP/DOWN") 
+    print("  L Button       → Forward")
+    print("  ZL Trigger     → Backward")
     print()
     print("RIGHT HAND (Rotation):")
-    print("  Right Stick ←→ → Turn Left/Right (Yaw)")
-    print("  Right Stick ↑↓ → Pitch Up/Down")
-    print("  R Button       → Roll Left") 
-    print("  ZR Trigger     → Roll Right")
+    print("  Right Stick ←→ → Roll Left/Right")
+    print("  Right Stick ↑↓ → Pitch Up/Down (inverted)")
+    print("  R Button       → Yaw Left") 
+    print("  ZR Trigger     → Yaw Right")
     print()
     print("GRIPPER & CONTROL:")
     print("  A Button       → Close Gripper")
@@ -231,6 +234,8 @@ if __name__ == "__main__":
 
 # for Tengen:
     # ssh -N -L 60000:localhost:5555 fhliang@10.136.109.136 -p 42522
+# for Primus:
+    # ssh -N -L 60000:localhost:5555 fhliang@10.136.109.136 -p 42022
 # for blackCoffee:
     # ssh -N -L 60000:localhost:5555 fhliang@10.136.109.242 -p 42522
 
