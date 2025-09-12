@@ -40,6 +40,7 @@ _conn, _a = _sock.accept()                 # blocks until the Mac connects
 _conn.setblocking(False)
 
 _last = np.zeros(10, dtype=np.float32)    # [action(7), plus flag, start flag, minus flag]
+_gripper_position = 0.0  # Track accumulated gripper position
 
 # ── Episode-level language helper ──────────────────────────────────────
 def episode_instruction(env, info, env_name: str) -> str:
@@ -63,7 +64,7 @@ def episode_instruction(env, info, env_name: str) -> str:
 
 def get_switch_action() -> np.ndarray:
     """Return the latest 7-float action vector (dx … gripper) for Jaco arm."""
-    global _last
+    global _last, _gripper_position
     try:
         data = _conn.recv(40)             # exactly 10 floats = 40 bytes
         if data:                          # ignore empty packets
@@ -73,16 +74,17 @@ def get_switch_action() -> np.ndarray:
     
     action = _last[:JACO_ACTION_DIM].copy()  # first 7 floats = action for Jaco
     
-    # Apply discrete gripper control like demo_manual_control_custom_envs.py
-    # Map continuous gripper input to discrete -1/+1 values for better control
+    # Handle gripper with accumulation for fine control
     gripper_input = action[6]  # gripper is the 7th element (index 6)
     if abs(gripper_input) > 0.01:  # threshold to detect button press (controller sends ±0.03)
-        if gripper_input > 0:
-            action[6] = 1.0   # fully open gripper (B button sends +0.03)
-        else:
-            action[6] = -1.0  # fully close gripper (A button sends -0.03)
+        # Accumulate gripper position based on input (fine control)
+        _gripper_position += gripper_input * 10.0  # Scale factor for sensitivity
+        # Clamp to reasonable range
+        _gripper_position = max(-1.0, min(1.0, _gripper_position))
+        action[6] = _gripper_position
     else:
-        action[6] = 0.0       # no gripper action
+        # Maintain current gripper position when no button is pressed
+        action[6] = _gripper_position
     
     return action
 
@@ -271,11 +273,7 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
             done = success or truncated
             step_count += 1
 
-            # Reset gripper action for delta target control mode (like demo_manual_control_custom_envs.py)
-            # This ensures gripper doesn't continue moving after one command
-            if "target_delta" in env.control_mode and "gripper" in env.control_mode:
-                # Reset the gripper component of the global _last array to prevent continuous movement
-                _last[6] = 0.0
+            # Note: Gripper reset removed to maintain gripper state during robot movement
 
             # --- Build Jaco-specific proprioceptive state ---
             jaco_proprio = get_jaco_proprioception(env, obs)  # 8D: EEF pose + gripper
