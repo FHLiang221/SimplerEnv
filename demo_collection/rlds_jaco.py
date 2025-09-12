@@ -76,11 +76,11 @@ def get_switch_action() -> np.ndarray:
     # Apply discrete gripper control like demo_manual_control_custom_envs.py
     # Map continuous gripper input to discrete -1/+1 values for better control
     gripper_input = action[6]  # gripper is the 7th element (index 6)
-    if abs(gripper_input) > 0.01:  # threshold to detect button press (controller sends ±0.05)
+    if abs(gripper_input) > 0.01:  # threshold to detect button press (controller sends ±0.03)
         if gripper_input > 0:
-            action[6] = 1.0   # fully open gripper (B button sends +0.05)
+            action[6] = 1.0   # fully open gripper (B button sends +0.03)
         else:
-            action[6] = -1.0  # fully close gripper (A button sends -0.05)
+            action[6] = -1.0  # fully close gripper (A button sends -0.03)
     else:
         action[6] = 0.0       # no gripper action
     
@@ -472,6 +472,7 @@ def collect_trajectory(env_name: str, num_trajs: int):
         "robot": "jaco",
         "sim_freq": 501,
         "control_freq": 3,
+        "max_episode_steps": 10000,  # Increase max steps to prevent premature truncation
         "scene_name": scene_name,
         "camera_cfgs": camera_cfgs,
         **task_params  # Add task-specific parameters (lr_switch, upright, etc.)
