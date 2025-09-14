@@ -77,9 +77,9 @@ AXIS_ZL = 4        # Backward relative to gripper (Left Trigger)
 AXIS_ZR = 5        # Yaw right (Right Trigger)
 
 # ── Control parameters (tuned for EE frame control) ────────────────────
-VEL_TRANSLATE = 0.012   # Slightly increased for EE frame (was 0.008)
-VEL_ROTATE = 0.05      # Slightly increased for better rotation control (was 0.04)
-VEL_GRIPPER = 0.03    # Gripper sensitivity (same)
+VEL_TRANSLATE = 0.004   # Base translation speed (50% slower than original 0.008)
+VEL_ROTATE = 0.02      # Base rotation speed (50% slower than original 0.04)
+VEL_GRIPPER = 0.015    # Gripper sensitivity (50% slower than original 0.03)
 DEADZONE = 0.05        # Stick deadzone
 
 # Speed modifiers

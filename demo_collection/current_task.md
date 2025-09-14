@@ -16,3 +16,6 @@ python EE.py google_robot_open_top_drawer 20
 
 # Closing drawers
 python EE.py google_robot_close_bottom_drawer 20
+
+**Push Task**
+python EE.py google_robot_push_coke_can 150

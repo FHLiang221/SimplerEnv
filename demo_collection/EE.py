@@ -216,12 +216,18 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
     )
     
     env_reset_options = {
-        #"obj_init_options": {"init_xy": [-0.12, 0.2]},
         "robot_init_options": {
             "init_xy": [-0.45, 0.6],
             "init_rot_quat": Pose(q=[1, 0, 0, 0]).q,
         },
     }
+
+    # For push task, fix coke can position
+    if "push" in env_name:
+        env_reset_options["obj_init_options"] = {
+            "init_xy": [-0.45, 0.05],  # Fixed position: X=-0.25, Y=0.05 (further from robot)
+            "init_rot_quat": [0.7071, 0, 0, 0.7071],  # Laid vertically (90° around Z)
+        }
     if names_in_env_id_fxn(["MoveNear"]):
         env_reset_options["obj_init_options"]["episode_id"] = 0
     obs, info = env.reset(options=env_reset_options)
@@ -311,8 +317,21 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
 
         # Step only if something changed
         if np.any(np.abs(action) > 1e-3):
-            obs, reward, success, truncated, _ = env.step(action)
-            done = success or truncated
+            """
+            -              obs, reward, success, truncated, _ = env.step(action)
+            -              done = success or truncated
+            +              obs, reward, terminated, truncated, info
+            +   = env.step(action)
+            +              done = terminated or truncated
+            +              # Get actual success from info, not from terminated flag
+            +              success = info.get('success', False)
+            """
+            
+            
+            obs, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+            # Get actual success from info, not from terminated flag
+            success = info.get('success', False)
             step_count += 1
 
             # Note: Gripper reset removed to maintain gripper state during robot movement
@@ -429,6 +448,7 @@ def collect_trajectory(env_name: str, num_trajs: int):
         "google_robot_pick_horizontal_coke_can": ("GraspSingleCokeCanInScene-v0", {"lr_switch": True}),
         "google_robot_pick_vertical_coke_can": ("GraspSingleCokeCanInScene-v0", {"laid_vertically": True}),
         "google_robot_pick_standing_coke_can": ("GraspSingleCokeCanInScene-v0", {"upright": True}),
+        "google_robot_push_coke_can": ("PushSingleCokeCanInScene-v0", {"laid_vertically": True}),
         "google_robot_pick_object": ("GraspSingleRandomObjectInScene-v0", {}),
         "google_robot_pick_apple": ("GraspSingleAppleInScene-v0", {}),
         "google_robot_pick_sponge": ("GraspSingleSpongeInScene-v0", {}),
@@ -480,6 +500,7 @@ def collect_trajectory(env_name: str, num_trajs: int):
         "google_robot_pick_horizontal_coke_can": "google_pick_coke_can_1_v4",
         "google_robot_pick_vertical_coke_can": "google_pick_coke_can_1_v4",
         "google_robot_pick_standing_coke_can": "google_pick_coke_can_1_v4",
+        "google_robot_push_coke_can": "google_pick_coke_can_1_v4",
         "google_robot_pick_object": "google_pick_coke_can_1_v4",
         "google_robot_pick_apple": "google_pick_coke_can_1_v4",
         "google_robot_pick_sponge": "google_pick_coke_can_1_v4",
