@@ -42,6 +42,8 @@ _conn.setblocking(False)
 
 _last = np.zeros(10, dtype=np.float32)    # [action(7), plus flag, start flag, minus flag]
 _gripper_position = 0.0  # Track accumulated gripper position
+_controller_active = False  # Track if controller has sent any input
+_prev_raw_action = np.zeros(7, dtype=np.float32)  # Track previous raw action for change detection
 
 # ── Episode-level language helper ──────────────────────────────────────
 def episode_instruction(env, info, env_name: str) -> str:
@@ -65,45 +67,54 @@ def episode_instruction(env, info, env_name: str) -> str:
 
 def transform_to_ee_frame(env, action):
     """
-    Transform translation commands from world frame to end-effector frame for intuitive control.
-    Rotations remain in world frame (feel free to modify this if needed).
-    
+    Transform commands from world frame to end-effector frame for OpenVLA compatibility.
+    Both translations and rotations are transformed to EE frame.
+
     Args:
         env: The environment instance
         action: [dx, dy, dz, droll, dpitch, dyaw, gripper] in world frame
-        
+
     Returns:
-        action: [dx, dy, dz, droll, dpitch, dyaw, gripper] with translations in EE frame
+        action: [dx, dy, dz, droll, dpitch, dyaw, gripper] with translations and rotations in EE frame
     """
     action_ee = action.copy()
-    
+
     # Get current end-effector pose
     eef_pose = env.tcp.pose
-    
+
     # Extract rotation matrix from end-effector pose
     # The rotation matrix transforms from EE frame to world frame
     rotation_matrix = eef_pose.to_transformation_matrix()[:3, :3]
-    
+
     # Transform translation commands from world frame to EE frame
     # Controller sends: [dx_world, dy_world, dz_world, ...]
     # We want: [dx_ee, dy_ee, dz_ee, ...] where these are relative to EE orientation
     world_translation = action[:3]  # [dx, dy, dz] in world frame
     ee_translation = rotation_matrix @ world_translation  # Transform to EE frame
-    
-    # Update action with EE-frame translations, keep rotations in world frame
-    action_ee[:3] = ee_translation
-    # action_ee[3:6] remains the same (rotations in world frame)
+
+    # Transform rotation commands from world frame to EE frame
+    # Controller sends: [droll_world, dpitch_world, dyaw_world] in world frame
+    # We want: [droll_ee, dpitch_ee, dyaw_ee] relative to current EE orientation
+    world_rotation = action[3:6]  # [droll, dpitch, dyaw] in world frame
+    ee_rotation = rotation_matrix @ world_rotation  # Transform to EE frame
+
+    # Update action with EE-frame translations and rotations
+    action_ee[:3] = ee_translation  # EE-frame translations
+    action_ee[3:6] = ee_rotation    # EE-frame rotations
     # action_ee[6] remains the same (gripper)
-    
+
     return action_ee
 
 def get_switch_action() -> np.ndarray:
     """Return the latest 7-float action vector (dx … gripper) for Jaco arm."""
-    global _last, _gripper_position
+    global _last, _gripper_position, _controller_active
     try:
         data = _conn.recv(40)             # exactly 10 floats = 40 bytes
         if data:                          # ignore empty packets
             _last = np.frombuffer(data, dtype=np.float32).copy()  # Make writable copy
+            # Check if controller is sending meaningful data
+            if np.any(np.abs(_last[:7]) > 1e-6):  # Any non-zero action input
+                _controller_active = True
     except BlockingIOError:
         pass                              # nothing arrived this frame
     
@@ -111,7 +122,7 @@ def get_switch_action() -> np.ndarray:
     
     # Handle gripper with accumulation for fine control
     gripper_input = action[6]  # gripper is the 7th element (index 6)
-    if abs(gripper_input) > 0.01:  # threshold to detect button press (controller sends ±0.03)
+    if abs(gripper_input) > 0.01:  # threshold to detect button press (controller sends ±0.015)
         # Accumulate gripper position based on input (fine control)
         _gripper_position += gripper_input * 10.0  # Scale factor for sensitivity
         # Clamp to reasonable range
@@ -210,7 +221,13 @@ def get_jaco_proprioception(env, obs) -> np.ndarray:
 # ── Episode Data Collection and Storage ─────────────────────────────────
 def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: int, base_dir=None):
     """Collect a single episode and return the raw data with success status."""
-    
+
+    # Initialize gripper and controller state at start of each episode
+    global _gripper_position, _controller_active, _prev_raw_action
+    _gripper_position = 0.0  # Start with neutral gripper position
+    _controller_active = False  # Reset controller activity flag
+    _prev_raw_action = np.zeros(7, dtype=np.float32)  # Reset change tracking
+
     names_in_env_id_fxn = lambda name_list: any(
         name in env_name for name in name_list
     )
@@ -280,7 +297,6 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
             training_frame_path = training_frames_dir / f"step{step_count:03d}_{timestamp}.png"
             cv2.imwrite(str(training_frame_path), cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
             
-            print(f"📸 Episode {episode_id} frames saved at step {step_count}: {timestamp}")
         
         plt.imshow(img)
         plt.axis("off")
@@ -307,27 +323,32 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
         
         # Transform translation to end-effector frame
         action = transform_to_ee_frame(env, raw_action)
-        
-        print(
-            f"\rStep {step_count:3d} | EE-Frame Action: "
-            + " | ".join(f"{a:+.02f}" for a in action),
-            end="",
-            flush=True,
-        )
 
-        # Step only if something changed
-        if np.any(np.abs(action) > 1e-3):
-            """
-            -              obs, reward, success, truncated, _ = env.step(action)
-            -              done = success or truncated
-            +              obs, reward, terminated, truncated, info
-            +   = env.step(action)
-            +              done = terminated or truncated
-            +              # Get actual success from info, not from terminated flag
-            +              success = info.get('success', False)
-            """
-            
-            
+        # Separate movement/rotation from gripper for no-op filtering
+        # Movement/rotation: check transformed values (first 6 components)
+        # Gripper: use change-based detection to avoid accumulated value issues
+        movement_active = np.any(np.abs(raw_action[:6]) > 1e-3)
+
+        # For gripper: check if current raw gripper input differs from stored gripper state
+        gripper_input_active = False
+        if len(_prev_raw_action) > 6:
+            gripper_input_active = abs(raw_action[6] - _prev_raw_action[6]) > 1e-6
+
+        should_step = movement_active or gripper_input_active
+
+        # Debug output to show stepping vs no-step behavior
+        if not should_step:
+            print(f"\r[NO-STEP] Step {step_count:3d} | movement:{movement_active}, gripper:{gripper_input_active} | Action: "
+                  + " | ".join(f"{a:+.02f}" for a in action), end="", flush=True)
+        else:
+            print(f"\r[STEPPING] Step {step_count:3d} -> {step_count+1} | Action: "
+                  + " | ".join(f"{a:+.02f}" for a in action), end="", flush=True)
+
+        # Update previous action for next comparison
+        _prev_raw_action[:] = raw_action[:7]  # Use slice assignment to modify global
+
+        # Only step when there was a meaningful change in input
+        if should_step:
             obs, reward, terminated, truncated, info = env.step(action)
             done = terminated or truncated
             # Get actual success from info, not from terminated flag

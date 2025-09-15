@@ -131,7 +131,7 @@ def get_action():
         dyaw = VEL_ROTATE * speed_mult
     elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger → yaw right
         dyaw = -VEL_ROTATE * speed_mult
-    
+
     dpitch = VEL_ROTATE * (axis(AX_RY)) * speed_mult    # Right stick up/down → pitch (inverted)
     droll = VEL_ROTATE * axis(AX_RX) * speed_mult       # Right stick left/right → roll
     
