@@ -15,10 +15,10 @@ LEFT HAND - TRANSLATION (relative to gripper orientation):
   ZL Trigger            : Down relative to gripper
 
 RIGHT HAND - ROTATION (world frame):
-  Right Stick X         : Roll rotate (left/right)
-  Right Stick Y         : Pitch rotate (up/down) - inverted
-  R Button              : Yaw rotate LEFT
-  ZR Trigger            : Yaw rotate RIGHT
+  Right Stick X         : Yaw rotate (left/right)
+  Right Stick Y         : Pitch rotate (up/down) - normal
+  R Button              : Roll rotate LEFT
+  ZR Trigger            : Roll rotate RIGHT
 
 GRIPPER & CONTROL:
   A Button              : Close gripper
@@ -124,16 +124,16 @@ def get_action():
     # Forward/back movement on left stick Y (relative to gripper)
     dx = VEL_TRANSLATE * (axis(AX_LY)) * speed_mult      # Left stick up/down → X forward/back (inverted)
     
-    # ── RIGHT HAND: ROTATION (world frame - same as before) ─────────────────
-    # Yaw on right shoulder buttons
-    dyaw = 0.0
-    if js.get_button(BTN_R):                            # R button → yaw left
-        dyaw = VEL_ROTATE * speed_mult
-    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger → yaw right
-        dyaw = -VEL_ROTATE * speed_mult
+    # ── RIGHT HAND: ROTATION (world frame - swapped controls) ─────────────────
+    # Roll on right shoulder buttons
+    droll = 0.0
+    if js.get_button(BTN_R):                            # R button → roll left
+        droll = VEL_ROTATE * speed_mult
+    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger → roll right
+        droll = -VEL_ROTATE * speed_mult
 
-    dpitch = VEL_ROTATE * (axis(AX_RY)) * speed_mult    # Right stick up/down → pitch (inverted)
-    droll = VEL_ROTATE * axis(AX_RX) * speed_mult       # Right stick left/right → roll
+    dpitch = VEL_ROTATE * (-axis(AX_RY)) * speed_mult   # Right stick up/down → pitch (normal, not inverted)
+    dyaw = VEL_ROTATE * axis(AX_RX) * speed_mult        # Right stick left/right → yaw
     
     # ── GRIPPER & CONTROL ───────────────────────────────────────────────
     grip = 0.0
@@ -178,10 +178,10 @@ def print_controls():
     print("  ZL Trigger     → Down relative to gripper")
     print()
     print("RIGHT HAND (Rotation - world frame):")
-    print("  Right Stick ←→ → Roll Left/Right")
-    print("  Right Stick ↑↓ → Pitch Up/Down (inverted)")
-    print("  R Button       → Yaw Left") 
-    print("  ZR Trigger     → Yaw Right")
+    print("  Right Stick ←→ → Yaw Left/Right")
+    print("  Right Stick ↑↓ → Pitch Up/Down (normal)")
+    print("  R Button       → Roll Left")
+    print("  ZR Trigger     → Roll Right")
     print()
     print("GRIPPER & CONTROL:")
     print("  A Button       → Close Gripper")
