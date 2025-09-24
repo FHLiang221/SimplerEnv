@@ -327,7 +327,7 @@ def collect_trajectory(env_name: str, num_trajs: int):
     print("📝 ADAPTIVE MODE: Instructions captured per episode for randomized tasks")
     print(
         "Controls: Left hand (L-stick, L/ZL) = translation, "
-        "Right hand (R-stick, R/ZR) = rotation, A/B = gripper"
+        "Right hand (R-stick=roll/pitch, R/ZR=yaw) = rotation, A/B = gripper"
     )
     print("Episode control: + = start episode / abort episode, - = abort episode")
     print("After failure: + = save failure, - = discard failure")

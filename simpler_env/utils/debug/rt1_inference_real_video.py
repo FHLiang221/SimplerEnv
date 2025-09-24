@@ -45,7 +45,7 @@ def main(
         obs_mode="rgbd",
         robot=robot,
         sim_freq=540,
-        max_episode_steps=60,
+        max_episode_steps=10000,
         control_freq=control_freq,
         camera_cfgs={"add_segmentation": True},
         rgb_overlay_path=inpainting_img_path,

@@ -47,7 +47,7 @@ def get_args():
 
     parser.add_argument("--control-freq", type=int, default=3)
     parser.add_argument("--sim-freq", type=int, default=513)
-    parser.add_argument("--max-episode-steps", type=int, default=80)
+    parser.add_argument("--max-episode-steps", type=int, default=10000)
     parser.add_argument("--rgb-overlay-path", type=str, default=None)
     parser.add_argument(
         "--robot-init-x-range",

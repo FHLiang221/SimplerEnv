@@ -13,10 +13,10 @@ LEFT HAND - TRANSLATION:
   ZL Trigger            : Z translate DOWN
 
 RIGHT HAND - ROTATION:
-  Right Stick X         : Yaw rotate (turn left/right)
+  Right Stick X         : Roll rotate (left/right)
   Right Stick Y         : Pitch rotate (nose up/down)
-  R Button              : Roll rotate LEFT
-  ZR Trigger            : Roll rotate RIGHT
+  R Button              : Yaw rotate RIGHT
+  ZR Trigger            : Yaw rotate LEFT
 
 GRIPPER & CONTROL:
   A Button              : Close gripper
@@ -72,7 +72,7 @@ AXIS_ZR = 5        # Roll right (Right Trigger)
 
 # ── Control parameters ─────────────────────────────────────────────────
 VEL_TRANSLATE = 0.03    # Base translation speed
-VEL_ROTATE = 0.3       # Base rotation speed
+VEL_ROTATE = 0.15      # Base rotation speed (halved)
 VEL_GRIPPER = 0.1     # Gripper sensitivity
 DEADZONE = 0.05        # Stick deadzone
 
@@ -113,15 +113,21 @@ def get_action():
         dz = -VEL_TRANSLATE * speed_mult
     
     # ── RIGHT HAND: ROTATION ────────────────────────────────────────────
-    dyaw = VEL_ROTATE * axis(AX_RX) * speed_mult        # Right stick left/right → yaw
-    dpitch = VEL_ROTATE * (-axis(AX_RY)) * speed_mult   # Right stick up/down → pitch
-    
-    # Roll on right shoulder buttons
+    # Roll on right stick X-axis (swapped from yaw)
     droll = 0.0
-    if js.get_button(BTN_R):                            # R button → roll left
-        droll = -VEL_ROTATE * speed_mult
-    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger (analog) → roll right
-        droll = VEL_ROTATE * speed_mult
+    if axis(AX_RX) < -0.1:                              # Right stick left → roll left
+        droll = -VEL_ROTATE * (-axis(AX_RX)) * speed_mult
+    elif axis(AX_RX) > 0.1:                             # Right stick right → roll right
+        droll = VEL_ROTATE * axis(AX_RX) * speed_mult
+
+    dpitch = VEL_ROTATE * (-axis(AX_RY)) * speed_mult   # Right stick up/down → pitch
+
+    # Yaw on right shoulder buttons (swapped from roll)
+    dyaw = 0.0
+    if js.get_button(BTN_R):                            # R button → yaw right (inverted)
+        dyaw = VEL_ROTATE * speed_mult
+    elif js.get_axis(AXIS_ZR) > 0.1:                    # ZR trigger (analog) → yaw left (inverted)
+        dyaw = -VEL_ROTATE * speed_mult
     
     # ── GRIPPER & CONTROL ───────────────────────────────────────────────
     grip = 0.0
@@ -166,10 +172,10 @@ def print_controls():
     print("  ZL Trigger     → Move DOWN")
     print()
     print("RIGHT HAND (Rotation):")
-    print("  Right Stick ←→ → Turn Left/Right (Yaw)")
+    print("  Right Stick ←→ → Roll Left/Right")
     print("  Right Stick ↑↓ → Pitch Up/Down")
-    print("  R Button       → Roll Left") 
-    print("  ZR Trigger     → Roll Right")
+    print("  R Button       → Yaw Right")
+    print("  ZR Trigger     → Yaw Left")
     print()
     print("GRIPPER & CONTROL:")
     print("  A Button       → Close Gripper")

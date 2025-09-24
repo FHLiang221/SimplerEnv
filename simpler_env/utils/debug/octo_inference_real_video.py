@@ -28,7 +28,7 @@ def main(
     policy_setup="widowx_bridge",
     robot="widowx",
     control_freq=5,
-    max_episode_steps=90,
+    max_episode_steps=10000,
     control_mode="arm_pd_ee_target_delta_pose_align2_gripper_pd_joint_pos",
     save_root="./debug_logs/",
     save_name="debug_octo_inference",
