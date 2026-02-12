@@ -20,7 +20,6 @@ import simpler_env
 from simpler_env.utils.env.observation_utils import (
     get_image_from_maniskill2_obs_dict,
 )
-from mani_skill2_real2sim.utils.sapien_utils import vectorize_pose
 
 # ── TCP receiver (connect-once, non-blocking reads) ────────────────────
 TCP_PORT = 5555
@@ -211,20 +210,26 @@ def collect_episode_data(env, env_name: str, episode_id: int, ignore_quit_for: i
                 cv2.imwrite(str(training_frame_path), cv2.cvtColor(resized, cv2.COLOR_RGB2BGR))
 
             # --- build proprio state (EEF pose + gripper) ---
-            # Get end-effector pose relative to robot base (more stable for mobile robots)
-            eef_pose_world = env.tcp.pose
-            eef_pose_relative = env.agent.robot.pose.inv() * eef_pose_world
-            eef_pose_vec = vectorize_pose(eef_pose_relative)  # [x,y,z,qx,qy,qz,qw]
-            
-            # Get gripper state from proprioception
+            # Use ManiSkill2's pre-computed eef_pos which is calculated as:
+            #   base_pose = self.base_pose.to_transformation_matrix()
+            #   ee_pose = self.ee_pose.to_transformation_matrix()
+            #   ee_in_base = np.linalg.inv(base_pose) @ ee_pose  # EEF relative to robot base
+            #   pos = ee_in_base[:3, 3]  # xyz position (3D)
+            #   quat_wxyz = mat2quat(ee_in_base[:3, :3])  # quaternion (4D)
+            #   gripper_nwidth = 1 - self.gripper_closedness  # normalized 0-1 (1D)
+            #   eef_pos = [pos, quat_wxyz, gripper_nwidth]  # 8D total
+            # See: ManiSkill2_real2sim/mani_skill2_real2sim/agents/base_agent.py:183-190
+
+            # OLD CODE (removed - was redundant):
+            # eef_pose_world = env.tcp.pose
+            # eef_pose_relative = env.agent.robot.pose.inv() * eef_pose_world
+            # eef_pose_vec = vectorize_pose(eef_pose_relative)  # [x,y,z,qx,qy,qz,qw]
+            # gripper_state = float(qpos[-1])  # ❌ Raw joint angle instead of normalized width
+            # state_vec = np.concatenate([eef_pose_vec, [gripper_state]], axis=0)
+
             agent_proprio = obs["agent"]
-            qpos = agent_proprio["qpos"]
-            # For Google Robot, gripper joints are typically the last joints
-            # We'll use the first gripper joint as the gripper openness indicator
-            gripper_state = float(qpos[-1]) if len(qpos) > 7 else 0.0
-            
-            # Build 8D state vector: EEF pose (7D) + gripper (1D)
-            state_vec = np.concatenate([eef_pose_vec, [gripper_state]], axis=0).astype(np.float32)
+            eef_pos = agent_proprio["eef_pos"]  # [pos(3), quat_wxyz(4), gripper_nwidth(1)] = 8D
+            state_vec = eef_pos[:8].astype(np.float32)
             
             # Store step data with episode-specific instruction
             step_data = {
